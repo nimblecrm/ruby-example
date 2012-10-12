@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>Page Title</title>
+    
+    </head>
+    <body >
+        <h1>Results data</h1>
+        <ul>
+        <% for @item in data %>
+            <li><%= @item["id"] %></li>
+        <% end %>
+        </ul>
+    </body>
+</html>
