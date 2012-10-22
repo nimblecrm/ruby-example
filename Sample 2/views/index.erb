@@ -5,11 +5,7 @@
     
     </head>
     <body >
-        <h3>Hello, <%= name %></h3>
-        <ul>
-        <% for @item in data %>
-            <li><%= @item["id"] %></li>
-        <% end %>
-        </ul>
+        <h1>Simple nimble client</h1>
+        May be <a href="<%= @redirect_to %>">log in?</a>
     </body>
 </html>

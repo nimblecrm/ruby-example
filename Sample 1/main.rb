@@ -1,13 +1,23 @@
+# Copyright 2012 Nimble
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
 require 'sinatra'
-require "net/http"
 require 'json'
+require 'faraday'
 
 require_relative 'nimble-strategy'
+
+# fill your own parameters
+CLIENT_ID = '6a0694f589ed960d13722c7a017dc35f'
+CLIENT_SECRET = 'eeaaf3fe1ff3c5aa'
 
 enable :sessions
 
 use OmniAuth::Builder do
-  provider :nimble, 'API_KEY', 'SECRET_KEY', scope: "testApp"
+  provider :nimble, CLIENT_ID, CLIENT_SECRET, scope: "testApp" # scope is optional
 end
 
 get '/' do
@@ -16,21 +26,16 @@ end
 
 get '/auth/nimble/callback' do
   token = request.env['omniauth.auth']['credentials']['token']
+  # we got name of logged user
+  name = request.env['omniauth.auth']['info']['name']
  
-  uri = URI.parse("https://api.nimble.com/api/v1/contacts/list")
-  args = {sort: 'recently viewed:asc', fields: 'first name,last name', access_token: token}
-  
-  uri.query = URI.encode_www_form(args)
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = true
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-  request = Net::HTTP::Get.new(uri.request_uri)
-
-  response = http.request(request)
+  # make request to Nimble API
+  args = {sort: 'recently viewed:asc', fields: 'first name,last name', access_token: token}  
+  conn = Faraday.new('https://api.nimble.com')
+  response = conn.get '/api/v1/contacts/list', args
   data = JSON.parse(response.body)['resources']
   
-  erb :results, :locals => {:data => data}
+  erb :results, :locals => {:data => data, :name => name}
 end
 
 get '/auth/failure' do
