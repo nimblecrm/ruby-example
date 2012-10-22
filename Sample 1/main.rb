@@ -7,8 +7,7 @@
 require 'sinatra'
 require 'json'
 require 'faraday'
-
-require_relative 'nimble-strategy'
+require 'omniauth-nimble'
 
 # fill your own parameters
 CLIENT_ID = '6a0694f589ed960d13722c7a017dc35f'
